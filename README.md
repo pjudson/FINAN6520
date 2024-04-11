@@ -7,3 +7,6 @@ Use CPI, Frozen OJ Concentrate, Pork Bellies, Gold, Oil against the S&P 500.
 
 
 This is an addition to the README File.
+
+
+Pull data from 1924 to 2024
