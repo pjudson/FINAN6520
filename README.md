@@ -16,4 +16,4 @@ Average Weekly Hours of All Employees, Total Private (AWHAETP)\
 10-Year Treasury Constant Maturity Minus 2-Year Treasury Constant Maturity (T10Y2Y)\
 University of Michigan: Consumer Sentiment (UMCSENT)\
 Money Supply - M2 (M2SL)\
-S&P 500 Monthly close price\
+S&P 500 Monthly close price
