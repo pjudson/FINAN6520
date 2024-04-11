@@ -5,5 +5,8 @@ Does periods of high inflation make it a good time or a bad time to invest in th
 
 Use CPI, Frozen OJ Concentrate, Pork Bellies, Gold, Oil against the S&P 500.
 
+Pull data from 1924 to 2024
 
-This is an addition to the README File.
+Sources from FRED
+Average Weekly Hours of Production and Nonsupervisory Employees: AWHAETP
+Yield Curve: T10Y2Y
