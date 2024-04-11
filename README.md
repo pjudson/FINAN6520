@@ -10,3 +10,8 @@ This is an addition to the README File.
 
 
 Pull data from 1924 to 2024
+
+Sources from FRED
+
+Average Weekly Hours of Production and Nonsupervisory Employees: AWHAETP
+Yield Curve: T10Y2Y
