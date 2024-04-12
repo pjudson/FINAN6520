@@ -3,7 +3,19 @@ import pandas_datareader as web
 import matplotlib.pyplot as plt
 import numpy as np
 import sklearn.metrics
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report
+from sklearn.model_selection import train_test_split
+
+
+def printOutTheCoefficients(params,coeffecients,intercept):
+    tParams = params[np.newaxis].T
+    tCoeffs = coeffecients.T
+    total = np.concatenate([tParams,tCoeffs],axis=1)
+    totalDF = pd.DataFrame(data=total)
+    totalDF.to_excel("modelOutput.xlsx")
+    print(totalDF)
+
 
 # Date Variables
 startDate = "1984-01-01"
@@ -58,4 +70,36 @@ sentiment = web.DataReader("UMCSENT", "fred", startDate, endDate)
 m2 = web.DataReader("M2SL", "fred", startDate, endDate)
 
 # S&P 500 Monthly Close Price
-sp500 = web.DataReader("^SPX", "stooq", startDate, endDate)["Close"].resample("BME").last()
+sp500 = web.DataReader("^SPX", "stooq", startDate, endDate)
+sp500 = sp500.drop(columns=['Open', 'High', 'Low', 'Volume'])
+
+joinedDfs = sp500.join(m2, how="inner")
+joinedDfs = joinedDfs.join(sentiment, how="inner")
+joinedDfs = joinedDfs.join(yieldCurve, how="inner")
+joinedDfs = joinedDfs.join(hours, how="inner")
+joinedDfs = joinedDfs.join(fed, how="inner")
+joinedDfs = joinedDfs.join(oil, how="inner")
+# joinedDfs = joinedDfs.join(gold, how="inner") data only exists until 2017
+joinedDfs = joinedDfs.join(beef, how="inner")
+joinedDfs = joinedDfs.join(oj, how="inner")
+# joinedDfs = joinedDfs.join(inflation, how="inner") only yearly data
+joinedDfs = joinedDfs.join(cpi, how="inner")
+
+# Beef has NaN value
+joinedDfs = joinedDfs.dropna(subset=["APU0000703112"])
+
+# Rename columns
+joinedDfs.rename(columns = {"Close": "SP500", "CPIAUCSL": "CPI", "APU0000713111": "OJ",
+                            "APU0000703112": "Beef", "PCU2122212122210": "Gold",
+                            "POILBREUSDM": "Oil", "FEDFUNDS": "FedFunds", "AWHAETP": "HoursWorked",
+                            "T10Y2Y": "Yield", "UMCSENT": "Sentiment", "M2SL": "M2"}, inplace = True)
+
+# separate for results and input sets
+dfResults = joinedDfs["SP500"]
+dfInputs = joinedDfs.drop("SP500", axis=1)
+
+# split between sets
+inputsTrain, inputsTest, resultTrain, resultTest = train_test_split(dfInputs, dfResults,
+                                                                    test_size=0.5, random_state=1)
+
+
