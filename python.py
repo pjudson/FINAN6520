@@ -2,10 +2,14 @@ import pandas as pd
 import pandas_datareader as web
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sb
 import sklearn.metrics
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
+import FinalProject.WOE as woe
+from sklearn import linear_model
+from sklearn.metrics import r2_score
 
 
 def printOutTheCoefficients(params,coeffecients,intercept):
@@ -94,6 +98,18 @@ joinedDfs.rename(columns = {"Close": "SP500", "CPIAUCSL": "CPI", "APU0000713111"
                             "POILBREUSDM": "Oil", "FEDFUNDS": "FedFunds", "AWHAETP": "HoursWorked",
                             "T10Y2Y": "Yield", "UMCSENT": "Sentiment", "M2SL": "M2"}, inplace = True)
 
+#Correlation Check
+correlation = joinedDfs.corr(numeric_only=True)
+finalIV,IV = woe.data_vars(joinedDfs,joinedDfs["SP500"])
+correlation.to_excel("correlation.xlsx")
+IV.to_excel("IVOutput.xlsx")
+
+#Correlation Map
+#M2, Beef , CPI have high levels of correlated with each other
+#so we may want to remove one or two of them
+sb.heatmap(correlation)
+plt.show()
+
 # separate for results and input sets
 dfResults = joinedDfs["SP500"]
 dfInputs = joinedDfs.drop("SP500", axis=1)
@@ -102,4 +118,17 @@ dfInputs = joinedDfs.drop("SP500", axis=1)
 inputsTrain, inputsTest, resultTrain, resultTest = train_test_split(dfInputs, dfResults,
                                                                     test_size=0.5, random_state=1)
 
+#Linear Regression
+#Since we are predicting an S&P numerical value, it would be a linear regression
+linRegr = linear_model.LinearRegression()
+linRegr.fit(inputsTrain,resultTrain)
+Ypredict = linRegr.predict(inputsTrain)
+
+#calculated R2
+r2easy = r2_score(resultTrain,Ypredict)
+print("Our calculated coeffs m:{} and b:{} and our r2 is {}".format(linRegr.coef_,linRegr.intercept_,r2easy))
+
+#I am thinking, in order to make this variable accurate, all our our predictor variables need to be time -1
+# for example, CPI data comes out and then the S&P reacts. So our R2 is really high since the S&P value is already factoring that in
+# We will need to take all the values for the month prior in order to predict what next month's S&P result looks like
 
