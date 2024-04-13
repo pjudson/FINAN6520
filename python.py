@@ -101,5 +101,9 @@ dfInputs = joinedDfs.drop("SP500", axis=1)
 # split between sets
 inputsTrain, inputsTest, resultTrain, resultTest = train_test_split(dfInputs, dfResults,
                                                                     test_size=0.5, random_state=1)
+# Logistic Regression
+LogReg = LogisticRegression()
+LogReg.fit(inputsTrain,resultTrain)
+
 
 
